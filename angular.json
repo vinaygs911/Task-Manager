@@ -19,7 +19,14 @@
             "production": {
               "extractLicenses": true,
               "namedChunks": false,
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false
             }
@@ -28,12 +35,11 @@
             "assets": [],
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "outputPath": "dist",
+            "outputPath": "dist/demo",
             "polyfills": [],
             "scripts": [],
             "styles": ["src/global_styles.css"],
-            "tsConfig": "tsconfig.app.json",
-            "baseHref": "/Task-Manager/"
+            "tsConfig": "tsconfig.app.json"
           }
         },
         "serve": {

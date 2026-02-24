@@ -1,53 +1,46 @@
-name: Deploy Angular demo to GitHub Pages
+name: Deploy Angular Task-Manager to GitHub Pages
 
 on:
   push:
     branches:
-      - main
       - master
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
+      - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: "npm"
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Angular app
-        run: npm run build -- --configuration production
+      - name: Build Angular project
+        run: npm run build -- --configuration production --base-href "https://vinaygs911.github.io/Task-Manager/"
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Your build output is dist/demo
-          path: dist
+      - name: Verify build output
+        run: |
+          echo "Listing dist/demo:"
+          ls -R dist/demo || true
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
+          if [ -d "dist/demo/browser" ] && [ -f "dist/demo/browser/index.html" ]; then
+            echo "Build output verified: dist/demo/browser"
+          else
+            echo "Build output verification failed."
+            exit 1
+          fi
+
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: dist/demo/browser
