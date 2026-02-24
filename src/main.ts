@@ -1,21 +1,28 @@
-import { Component, signal } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
+import {
+  provideRouter,
+  Routes,
+  withComponentInputBinding,
+} from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideZoneChangeDetection } from '@angular/core';
+import { AppComponent } from './app/app.component';
 
-@Component({
-  selector: 'app-root',
-  template: `
-    <h1>Hello from {{ name }}!</h1>
-    <a target="_blank" href="https://angular.dev/overview">
-      Learn more about Angular
-    </a>
-    <button (click)="counter.set(counter() - 1)">--</button>
-    <span> Counter: {{ counter() }} </span>
-    <button (click)="counter.set(counter() + 1)">++</button>
-  `,
-})
-export class App {
-  name = 'Angular';
-  counter = signal(0);
-}
+const routes: Routes = [
+  {
+    path: '',
+    loadChildren: () =>
+      import('./app/features/tasks/tasks.routes').then((m) => m.TASKS_ROUTES),
+  },
+  {
+    path: '**',
+    redirectTo: '',
+  },
+];
 
-bootstrapApplication(App);
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideRouter(routes, withComponentInputBinding()),
+    provideHttpClient(),
+  ],
+}).catch((err) => console.error(err));
