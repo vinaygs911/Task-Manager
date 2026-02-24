@@ -39,7 +39,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Your build output is dist/demo
-          path: dist/demo
+          path: dist
 
   deploy:
     needs: build
